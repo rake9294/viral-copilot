@@ -2,7 +2,7 @@
  * Apify Meta Ads adapter — Facebook Ads Library via the novi/facebook-ads-library-scraper actor.
  *
  * Calls the Apify REST API directly with the user's API token.
- * Actor: https://apify.com/novi/facebook-ads-library-scraper
+ * Actor: https://apify.com/apify/facebook-ads-scraper
  *
  * Input fields (novi/facebook-ads-library-scraper):
  *   - searchTerms: string[] — keywords to search for ads
@@ -36,7 +36,7 @@ import {
 } from "../schemas.js";
 
 const APIFY_API_BASE = "https://api.apify.com/v2";
-const META_ADS_ACTOR = "novi~facebook-ads-library-scraper";
+const META_ADS_ACTOR = "apify~facebook-ads-scraper";
 
 function getToken(): string {
   const token = process.env.APIFY_API_TOKEN;
@@ -97,7 +97,7 @@ async function runActorSync(
 /**
  * Apify Facebook Ads Library adapter.
  *
- * Uses the novi/facebook-ads-library-scraper actor to search public Meta Ads.
+ * Uses the apify/facebook-ads-scraper actor to search public Meta Ads.
  * Token must be in APIFY_API_TOKEN env var.
  */
 export class ApifyMetaAdapter implements ContentSourceAdapter {
