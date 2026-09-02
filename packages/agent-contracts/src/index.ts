@@ -143,3 +143,13 @@ export type {
   ComposerCreativeOutput,
   ComposerInput,
 } from "./creative-composer.js";
+
+// ---- Similarity Report ---- 
+export {
+  SimilarityMatchSchema,
+  SimilarityReportSchema,
+} from "./similarity-report.js";
+export type {
+  SimilarityMatch,
+  SimilarityReport,
+} from "./similarity-report.js";

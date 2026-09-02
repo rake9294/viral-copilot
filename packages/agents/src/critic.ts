@@ -1,7 +1,7 @@
 import type { LLMClient } from "@viral-copilot/llm-gateway";
 import type {
-  CreativeOutput,
-  CreativeStrategy,
+  ComposerCreativeOutput,
+  StrategistCreativeStrategy,
   CriticReview,
 } from "@viral-copilot/agent-contracts";
 import { CriticReviewSchema } from "@viral-copilot/agent-contracts";
@@ -27,8 +27,8 @@ Produis un objet JSON valide correspondant au CriticReviewSchema.`;
  * Build the user prompt for the critic review.
  */
 function buildCriticPrompt(
-  draft: CreativeOutput,
-  strategy: CreativeStrategy,
+  draft: ComposerCreativeOutput,
+  strategy: StrategistCreativeStrategy,
 ): string {
   const lines: string[] = [];
 
@@ -96,8 +96,8 @@ export class CriticAgent {
   constructor(private llm: LLMClient) {}
 
   async review(
-    draft: CreativeOutput,
-    strategy: CreativeStrategy,
+    draft: ComposerCreativeOutput,
+    strategy: StrategistCreativeStrategy,
   ): Promise<CriticReview> {
     const userPrompt = buildCriticPrompt(draft, strategy);
 
@@ -120,8 +120,8 @@ export class CriticAgent {
   }
 
   async execute(input: {
-    draft: CreativeOutput;
-    strategy: CreativeStrategy;
+    draft: ComposerCreativeOutput;
+    strategy: StrategistCreativeStrategy;
   }): Promise<CriticReview> {
     return this.review(input.draft, input.strategy);
   }

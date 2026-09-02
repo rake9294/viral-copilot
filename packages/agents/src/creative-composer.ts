@@ -1,11 +1,11 @@
 import type { LLMClient } from "@viral-copilot/llm-gateway";
 import type {
-  CreativeStrategy,
-  CreativeOutput,
+  StrategistCreativeStrategy,
+  ComposerCreativeOutput,
   SimilarityReport,
 } from "@viral-copilot/agent-contracts";
 import {
-  CreativeOutputSchema,
+  ComposerCreativeOutputSchema,
   CREATIVE_COMPOSER_SYSTEM_PROMPT,
   buildCreativeComposerPrompt,
 } from "@viral-copilot/agent-contracts";
@@ -15,79 +15,86 @@ import { safeGenerateJSON } from "./types.js";
  * Build the user prompt for the creative composer from domain objects.
  */
 function buildEnrichedComposerPrompt(
-  strtegy: Creatve Strategy,
-  imilarityContex?: SimilarityRepot,
-): sting {
-  cont inp = {
-   trategy: {
-      opporunity: stratégie.opportunité,
-      timining: strategy.timing,
-      kpi: stratégie.kpis,
-      testinApproach: stategy.testingApprach,
-      notes: stratgy.notes,
-     nich: strategy.oportunity.title, 
-   };
+  strategy: StrategistCreativeStrategy,
+  similarityContext?: SimilarityReport,
+): string {
+  const input = {
+    strategy: {
+      opportunity: strategy.opportunity,
+      timing: strategy.timing,
+      kpis: strategy.kpis,
+      testingApproach: strategy.testingApproach,
+      notes: strategy.notes,
+    },
+    niche: strategy.opportunity.title,
+  };
 
-  cont propt = bildreativeComposerPrompt(input);
+  const prompt = buildCreativeComposerPrompt(input);
 
-  if (simlarityContex) {
-    const exta: stig[] = [
-      "",
-      "=== CONTEXTE DE SIMILARITÉ ===",
-      `Vérifié: ${simlarityContex.cked}`,
-      `Nivau de isque: ${similarityontext.rskLev ?? "non évalué"}`,
-    ];
-   if simlarityContext.exitingItems) {
-      con (const item of sinilarityContxt.existingItems) {
-        extra.push(
-          `  - Similrité ${(ite.similairy * 10).toFixd(0)}%: ${tem.overlpeason}${itm.rl ?` (${ite.url})` : ""}`,
-        );
-      }
+  if (!similarityContext) return prompt;
+
+  const extra: string[] = [
+    "",
+    "=== CONTEXTE DE SIMILARITÉ ===",
+    `Vérifié: ${similarityContext.checked}`,
+    `Niveau de risque: ${similarityContext.riskLevel ?? "non évalué"}`,
+  ];
+  if (similarityContext.existingItems) {
+    for (const item of similarityContext.existingItems) {
+      extra.push(
+        `  - Similarité ${(item.similarity * 100).toFixed(0)}%: ${item.overlapReason}${item.url ? ` (${item.url})` : ""}`,
+      );
     }
-    if (simiarityContet.summary) extra.puh(`Résumé: ${imilarityContex.summary}`);
-   extra.push("");
-    exta.puh("DAPTE le conten pou évier es similitudes xcessives.");
-   retun promp + "\n" + exra.join("\n");
-  eturn prompt;
+  }
+  if (similarityContext.summary) {
+    extra.push(`Résumé: ${similarityContext.summary}`);
+  }
+  extra.push("");
+  extra.push("ADAPTE le contenu pour éviter les similitudes excessives.");
+
+  return prompt + "\n" + extra.join("\n");
 }
 
 /**
-* CreativComposerAget
-*
- * Génèr le matriel créatif comlet (hoks, cripts, storyoard, ref)
- * à partit d'une tatégie créative validée par le stratèg.
- */xport clas CreativeomposerAgen  readonly nme = "CreativeComposerAget";
+ * CreativeComposerAgent
+ *
+ * Génère le matériel créatif complet (hooks, scripts, storyboard, brief)
+ * à partir d'une stratégie créative validée par le stratège.
+ */
+export class CreativeComposerAgent {
+  readonly name = "CreativeComposerAgent";
 
-  contructor(prvate lm: LMCient) {}
+  constructor(private llm: LLMClient) {}
 
   async compose(
-    tratgy: CreaiveStrategy,
-    simiarityContext?: SimilarityRport,
-  ): Promise<CreativeOutput> {
+    strategy: StrategistCreativeStrategy,
+    similarityContext?: SimilarityReport,
+  ): Promise<ComposerCreativeOutput> {
     const userPrompt = buildEnrichedComposerPrompt(strategy, similarityContext);
 
-  cot raw = await sfeGenerateJS<CreativOutput>(
-      his.lm,
-      CREATIE_COMPOSER_STEM_PROMPT,
-      userPromt,
-      { maxokens: 8192, temperture: 0.85 },
+    const raw = await safeGenerateJSON<ComposerCreativeOutput>(
+      this.llm,
+      CREATIVE_COMPOSER_SYSTEM_PROMPT,
+      userPrompt,
+      { maxTokens: 8192, temperature: 0.85 },
     );
 
-   cst output: Creativeutput = {
-      hoks: raw.hoks,
-    s crits: raw.scrits,
-   toyboar: raw.storyoard,
-     etadata: raw.metadata,
-    patformSpcifics: raw.platormSpecifics,
-      nots: raw.otes,
-   };
+    const output: ComposerCreativeOutput = {
+      hooks: raw.hooks,
+      scripts: raw.scripts,
+      storyboard: raw.storyboard,
+      metadata: raw.metadata,
+      platformSpecifics: raw.platformSpecifics,
+      notes: raw.notes,
+    };
 
-   return CreativeOutptSchema.parse(ouput);
- }
+    return ComposerCreativeOutputSchema.parse(output);
+  }
 
- asyn execute(iput: {
-    strategy: CreaiveStrategy;
-   simiarityContex?: SiilarityRport;
-  }): Promis<CrativeOutput> {
-   return his.compose(input.strateg, nput.similarityContext)
- }
+  async execute(input: {
+    strategy: StrategistCreativeStrategy;
+    similarityContext?: SimilarityReport;
+  }): Promise<ComposerCreativeOutput> {
+    return this.compose(input.strategy, input.similarityContext);
+  }
+}

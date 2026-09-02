@@ -1,9 +1,9 @@
 import type { LLMClient } from "@viral-copilot/llm-gateway";
 import type {
-  SignalReport,
+  SignalAnalystReport,
 } from "@viral-copilot/agent-contracts";
 import {
-  SignalReportSchema,
+  SignalAnalystReportSchema,
   SIGNAL_ANALYST_SYSTEM_PROMPT,
   buildSignalAnalystPrompt,
 } from "@viral-copilot/agent-contracts";
@@ -12,7 +12,6 @@ import { safeGenerateJSON, type NicheProfile, type ScoreResult } from "./types.j
 
 /**
  * Build the enriched user prompt for signal analysis.
- * Wraps the existing buildSignalAnalystPrompt with domain objects.
  */
 function buildEnrichedAnalystPrompt(
   niche: NicheProfile,
@@ -42,7 +41,6 @@ function buildEnrichedAnalystPrompt(
 
   const basePrompt = buildSignalAnalystPrompt(input);
 
-  // Append scoring context
   const scoreMap = new Map<string, ScoreResult>();
   for (const s of scores) scoreMap.set(s.externalId, s);
 
@@ -56,7 +54,6 @@ function buildEnrichedAnalystPrompt(
     }
   }
 
-  // Statistical summary
   if (scores.length > 0) {
     const avg = scores.reduce((a, b) => a + b.compositeScore, 0) / scores.length;
     const sorted = scores.map((s) => s.compositeScore).sort((a, b) => a - b);
@@ -77,7 +74,6 @@ function buildEnrichedAnalystPrompt(
  *
  * Analyse les items bruts enrichis de leurs scores et produit
  * un rapport de signaux identifiant les opportunités de contenu.
- * Utilise les schémas et prompts existants de @viral-copilot/agent-contracts.
  */
 export class SignalAnalystAgent {
   readonly name = "SignalAnalystAgent";
@@ -88,17 +84,17 @@ export class SignalAnalystAgent {
     niche: NicheProfile,
     items: RawSourceItem[],
     scores: ScoreResult[],
-  ): Promise<SignalReport> {
+  ): Promise<SignalAnalystReport> {
     const userPrompt = buildEnrichedAnalystPrompt(niche, items, scores);
 
-    const raw = await safeGenerateJSON<SignalReport>(
+    const raw = await safeGenerateJSON<SignalAnalystReport>(
       this.llm,
       SIGNAL_ANALYST_SYSTEM_PROMPT,
       userPrompt,
       { maxTokens: 8192 },
     );
 
-    const report: SignalReport = {
+    const report: SignalAnalystReport = {
       signals: raw.signals ?? [],
       metrics: raw.metrics ?? {
         totalPostsAnalyzed: items.length,
@@ -108,14 +104,14 @@ export class SignalAnalystAgent {
       },
     };
 
-    return SignalReportSchema.parse(report);
+    return SignalAnalystReportSchema.parse(report);
   }
 
   async execute(input: {
     niche: NicheProfile;
     items: RawSourceItem[];
     scores: ScoreResult[];
-  }): Promise<SignalReport> {
+  }): Promise<SignalAnalystReport> {
     return this.analyze(input.niche, input.items, input.scores);
   }
 }

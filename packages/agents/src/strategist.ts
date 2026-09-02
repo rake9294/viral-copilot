@@ -1,10 +1,10 @@
 import type { LLMClient } from "@viral-copilot/llm-gateway";
 import type {
-  Signal,
-  CreativeStrategy,
+  SignalAnalystSignal,
+  StrategistCreativeStrategy,
 } from "@viral-copilot/agent-contracts";
 import {
-  CreativeStrategySchema,
+  StrategistCreativeStrategySchema,
   STRATEGIST_SYSTEM_PROMPT,
   buildStrategistPrompt,
 } from "@viral-copilot/agent-contracts";
@@ -14,7 +14,7 @@ import { safeGenerateJSON, type NicheProfile } from "./types.js";
  * Build the user prompt for the strategist from domain objects.
  */
 function buildEnrichedStrategistPrompt(
-  signal: Signal,
+  signal: SignalAnalystSignal,
   niche: NicheProfile,
 ): string {
   const input = {
@@ -46,7 +46,6 @@ function buildEnrichedStrategistPrompt(
  * StrategistAgent
  *
  * Transforme un signal d'opportunité en stratégie créative actionnable.
- * Utilise les schémas et prompts existants de @viral-copilot/agent-contracts.
  */
 export class StrategistAgent {
   readonly name = "StrategistAgent";
@@ -54,19 +53,19 @@ export class StrategistAgent {
   constructor(private llm: LLMClient) {}
 
   async strategize(
-    signal: Signal,
+    signal: SignalAnalystSignal,
     niche: NicheProfile,
-  ): Promise<CreativeStrategy> {
+  ): Promise<StrategistCreativeStrategy> {
     const userPrompt = buildEnrichedStrategistPrompt(signal, niche);
 
-    const raw = await safeGenerateJSON<CreativeStrategy>(
+    const raw = await safeGenerateJSON<StrategistCreativeStrategy>(
       this.llm,
       STRATEGIST_SYSTEM_PROMPT,
       userPrompt,
       { maxTokens: 4096, temperature: 0.8 },
     );
 
-    const strategy: CreativeStrategy = {
+    const strategy: StrategistCreativeStrategy = {
       opportunity: raw.opportunity,
       timing: raw.timing,
       budgetSuggestion: raw.budgetSuggestion,
@@ -75,13 +74,13 @@ export class StrategistAgent {
       notes: raw.notes,
     };
 
-    return CreativeStrategySchema.parse(strategy);
+    return StrategistCreativeStrategySchema.parse(strategy);
   }
 
   async execute(input: {
-    signal: Signal;
+    signal: SignalAnalystSignal;
     niche: NicheProfile;
-  }): Promise<CreativeStrategy> {
+  }): Promise<StrategistCreativeStrategy> {
     return this.strategize(input.signal, input.niche);
   }
 }
