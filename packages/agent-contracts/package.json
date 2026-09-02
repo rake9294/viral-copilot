@@ -1,17 +1,17 @@
-1|{
-2|  "name": "@viral-copilot/agent-contracts",
-3|  "version": "0.1.0",
-4|  "private": true,
-5|  "main": "./dist/index.js",
-6|  "types": "./dist/index.d.ts",
-7|  "scripts": {
-8|    "build": "tsc",
-9|    "typecheck": "tsc --noEmit"
-10|  },
-11|  "dependencies": {
-12|    "zod": "^3.24.0"
-13|  },
-14|  "devDependencies": {
-15|    "typescript": "^5.7.0"
-16|  }
-17|}
+{
+  "name": "@viral-copilot/agent-contracts",
+  "version": "0.1.0",
+  "private": true,
+  "main": "./dist/index.js",
+  "types": "./dist/index.d.ts",
+  "scripts": {
+    "build": "tsc",
+    "typecheck": "tsc --noEmit"
+  },
+  "dependencies": {
+    "zod": "^3.24.0"
+  },
+  "devDependencies": {
+    "typescript": "^5.7.0"
+  }
+}
