@@ -1,5 +1,6 @@
 {
   "buildCommand": "pnpm --filter=@viral-copilot/web build",
-  "installCommand": "pnpm install",
+  "installCommand": "pnpm install --frozen-lockfile",
+  "outputDirectory": "apps/web/.next",
   "framework": "nextjs"
 }
