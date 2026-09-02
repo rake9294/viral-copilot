@@ -1,0 +1,17 @@
+{
+  "name": "@viral-copilot/trigger",
+  "version": "0.1.0",
+  "type": "module",
+  "private": true,
+  "dependencies": {
+    "@trigger.dev/sdk": "^3.0.0",
+    "@viral-copilot/workflows": "workspace:*"
+  },
+  "scripts": {
+    "build": "tsc -b",
+    "clean": "tsc -b --clean"
+  },
+  "devDependencies": {
+    "typescript": "^5.7.0"
+  }
+}
