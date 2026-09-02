@@ -1,0 +1,20 @@
+{
+  "name": "viral-copilot",
+  "version": "0.1.0",
+  "private": true,
+  "scripts": {
+    "build": "pnpm -r build",
+    "build:workflows": "pnpm --filter @viral-copilot/workflows build",
+    "build:trigger": "pnpm --filter @viral-copilot/trigger build",
+    "clean": "pnpm -r clean",
+    "typecheck": "tsc -b"
+  },
+  "devDependencies": {
+    "@types/node": "^22.20.1",
+    "typescript": "^5.7.0"
+  },
+  "engines": {
+    "node": ">=20",
+    "pnpm": ">=9"
+  }
+}

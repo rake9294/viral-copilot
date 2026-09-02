@@ -1,0 +1,5 @@
+# Generated artifacts from development tooling
+*.d.ts
+*.d.ts.map
+*.js
+*.js.map
