@@ -11,6 +11,18 @@ importers:
       '@types/node':
         specifier: ^22.20.1
         version: 22.20.1
+      '@viral-copilot/agent-contracts':
+        specifier: workspace:*
+        version: link:packages/agent-contracts
+      '@viral-copilot/database':
+        specifier: workspace:*
+        version: link:packages/database
+      '@viral-copilot/llm-gateway':
+        specifier: workspace:*
+        version: link:packages/llm-gateway
+      next:
+        specifier: ^15.2.0
+        version: 15.5.25(@opentelemetry/api@1.9.0)(@types/node@22.20.1)(react-dom@19.2.8(react@19.2.8))(react@19.2.8)
       typescript:
         specifier: ^5.7.0
         version: 5.9.3
